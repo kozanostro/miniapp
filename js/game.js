@@ -62,6 +62,25 @@
 
     return false;
   }
+  function hasAnyLegalMove(hand, leftEnd, rightEnd){
+  return hand.some(t => canPlay(t, leftEnd, rightEnd));
+}
+
+function playerDraw(){
+  const g = S.game;
+  if (!g || g.status !== "playing") return;
+  if (g.turn !== "player") return;
+
+  if (g.deck.length === 0){
+    // колода пустая — больше добрать нельзя
+    return;
+  }
+
+  // добираем 1 кость
+  g.player.push(g.deck.pop());
+
+  // если после добора всё равно нет хода — игрок может нажать ещё раз
+}
 
   function makeGame(){
     const deck = shuffle(makeSet());
