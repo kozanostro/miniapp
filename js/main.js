@@ -1,3 +1,5 @@
+console.log("main.js loaded");
+
 (function(){
   const S = window.AppState;
   const UI = window.UI;
