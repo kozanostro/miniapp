@@ -278,11 +278,13 @@ function playerDraw(){
     el("turnLabel").textContent = "—";
     el("hint").textContent = "";
   }
-
   window.Game = {
-    startNewGame,
-    clearGame,
-    renderAll
-  };
+  startNewGame,
+  playerDraw,
+  clearGame,
+  renderAll
+};
+
+  
 })();
 
