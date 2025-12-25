@@ -112,10 +112,13 @@
       UI.renderWallet();
     };
   }
-
   function bindGameButtons(){
-    UI.el("btnNewGame").onclick = () => window.Game.startNewGame();
-    UI.el("btnClear").onclick = () => window.Game.clearGame();
+  UI.el("btnNewGame").onclick = () => window.Game.startNewGame();
+  UI.el("btnDraw").onclick = () => window.Game.playerDraw();
+  UI.el("btnClear").onclick = () => window.Game.clearGame();
+}
+
+  
   }
 
   function bindDebug(){
