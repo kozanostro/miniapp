@@ -115,6 +115,11 @@
   function bindGameButtons(){
   UI.el("btnNewGame").onclick = () => window.Game.startNewGame();
   UI.el("btnDraw").onclick = () => window.Game.playerDraw();
+    const btnDraw = UI.el("btnDraw");
+  if (btnDraw){
+  btnDraw.onclick = () => window.Game.playerDraw();
+}
+
   UI.el("btnClear").onclick = () => window.Game.clearGame();
 }
 
