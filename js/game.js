@@ -78,35 +78,41 @@
       status: "playing",
     };
   }
-
-  function renderChain(){
-    const chainEl = el("chain");
-    const endsEl = el("chainEnds");
-    const deckEl = el("deckCount");
+  function renderChain(chainTiles) {
+    const chainEl = document.getElementById("chain");
     if (!chainEl) return;
 
-    const g = S.game;
     chainEl.innerHTML = "";
 
-    if (deckEl) deckEl.textContent = g ? String(g.deck.length) : "—";
+    const wrapEvery = 7; // сколько костей в ряд (под экран телефона). Можно 6-8.
 
-    if (!g || g.chain.tiles.length===0){
-      if (endsEl) endsEl.textContent = "—";
-      return;
+    chainTiles.forEach((t, i) => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+
+    // делаем "угол" на стыках рядов
+    // пример: последняя в ряду и первая в новом ряду - вертикальная
+    if ((i + 1) % wrapEvery === 0 || i % wrapEvery === 0) {
+      tile.classList.add("v");
     }
 
-    if (endsEl) endsEl.textContent = `${g.chain.leftEnd} … ${g.chain.rightEnd}`;
+    const a = document.createElement("span");
+    const split = document.createElement("div");
+    const b = document.createElement("span");
+    split.className = "split";
 
-    g.chain.tiles.slice(-9).forEach(t=>{
-      const a = t.flip ? t.b : t.a;
-      const b = t.flip ? t.a : t.b;
-      const div = document.createElement("div");
-      div.className = "tile tileSmall";
-      div.innerHTML = `<span>${a}</span><div class="split"></div><span>${b}</span>`;
-      chainEl.appendChild(div);
-    });
-  }
+    a.textContent = String(t.left);
+    b.textContent = String(t.right);
 
+    tile.appendChild(a);
+    tile.appendChild(split);
+    tile.appendChild(b);
+
+    chainEl.appendChild(tile);
+  });
+}
+
+  
   function renderHand(){
     const handEl = el("hand");
     const hintEl = el("hint");
