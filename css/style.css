@@ -48,7 +48,7 @@ body{
 .screen{ display:none; }
 .screen.active{ display:block; }
 
-/* ===== ПУНКТ 1: персонаж на весь верхний блок, НЕ В КРУЖКЕ ===== */
+/* персонаж на весь верх */
 .heroPreview{
   height: 260px;
   margin: 16px 0;
@@ -61,7 +61,7 @@ body{
 .heroPreview img{
   width:100%;
   height:100%;
-  object-fit:contain; /* полностью помещаем персонажа */
+  object-fit:contain;
 }
 
 /* выбор сложности */
@@ -122,10 +122,11 @@ body{
   font-size:13px;
 }
 
+/* подняли цепочку выше */
 .chain{
   position:absolute;
   left:0; right:0;
-  bottom:60px;
+  bottom:70px;
   display:flex;
   justify-content:center;
   gap:8px;
@@ -149,7 +150,6 @@ body{
 .tile span{ line-height:1; font-size:22px; }
 .tile .split{ opacity:0.25; margin:4px 0; width:70%; height:1px; background:#111; }
 
-/* рука игрока */
 .hand{
   display:flex;
   flex-wrap:wrap;
@@ -166,6 +166,7 @@ body{
 .hand .tile:hover{
   transform: translateY(-2px);
 }
+
 .debug{
   margin-top:12px;
   background:#222;
@@ -173,4 +174,3 @@ body{
   border-radius:12px;
   overflow:auto;
 }
-
