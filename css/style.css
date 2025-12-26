@@ -123,15 +123,17 @@ body{
 }
 
 /* подняли цепочку выше */
-.chain{
+  .chain{
   position:absolute;
   left:0; right:0;
   bottom:70px;
   display:flex;
   justify-content:center;
+  align-items:center;     /* добавили */
   gap:8px;
   padding: 0 12px;
 }
+
 
  .tile{
   width:84px;
