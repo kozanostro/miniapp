@@ -1,145 +1,28 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Domino</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="./css/style.css?v=2">
+  <link rel="stylesheet" href="./css/style.css">
 </head>
-
 <body>
-  <header class="top">
-    <div class="title">
-      <h1>Domino</h1>
-      <div id="subTitle" class="muted">Загрузка…</div>
-    </div>
-    <button id="btnDebug" class="btn btnGhost">Debug</button>
-  </header>
 
-  <!-- SCREEN 1: START -->
-  <section id="screenStart" class="screen active">
-    <div id="profile" class="card"></div>
+<h2>Domino</h2>
 
-    <div id="wallet" class="card" style="margin-top:12px;"></div>
-    <div class="row" style="margin-top:10px;">
-      <button id="btnPlus" class="btn">+10</button>
-      <button id="btnMinus" class="btn">-10</button>
-      <button id="btnReset" class="btn">Сброс</button>
-    </div>
+<button id="startBtn">Start</button>
 
-    <button id="btnStart" class="btn btnPrimary" style="margin-top:14px;">Старт</button>
-    <div class="muted" style="margin-top:8px;">Шаг 1/5</div>
-  </section>
+<div id="tableWrapper">
+  <div id="table"></div>
+</div>
 
-  <!-- SCREEN 2: DIFFICULTY -->
-  <section id="screenDifficulty" class="screen">
-    <div class="card">
-      <b>Выбери сложность</b>
-      <div class="muted">Шаг 2/5 • p4 = супер сложный</div>
-    </div>
+<div class="controls">
+  <button id="playBtn">Сыграть</button>
+  <button id="clearBtn">Очистить</button>
+</div>
 
-    <div id="heroPreview" class="heroPreview"></div>
-
-    <div class="grid4">
-      <button class="pickCard" data-diff="easy">
-        <img src="./assets/domino/players/p1.png" alt="">
-        <div class="pickTitle">Easy</div>
-      </button>
-      <button class="pickCard" data-diff="mid">
-        <img src="./assets/domino/players/p2.png" alt="">
-        <div class="pickTitle">Medium</div>
-      </button>
-      <button class="pickCard" data-diff="hard">
-        <img src="./assets/domino/players/p3.png" alt="">
-        <div class="pickTitle">Hard</div>
-      </button>
-      <button class="pickCard pickBoss" data-diff="super">
-        <img src="./assets/domino/players/p4.png" alt="">
-        <div class="pickTitle">SUPER (p4)</div>
-      </button>
-    </div>
-
-    <button id="backToStart" class="btn btnGhost">Назад</button>
-  </section>
-
-  <!-- SCREEN 3: STYLE -->
-  <section id="screenStyle" class="screen">
-    <div class="card">
-      <b>Выбери стиль</b>
-      <div class="muted">Шаг 3/5</div>
-    </div>
-
-    <div id="heroPreview2" class="heroPreview"></div>
-
-    <div class="row">
-      <button class="btn" data-style="classic">Classic</button>
-      <button class="btn" data-style="dark">Dark</button>
-    </div>
-
-    <button id="backToDiff" class="btn btnGhost">Назад</button>
-  </section>
-
-  <!-- SCREEN 4: BET -->
-  <section id="screenBet" class="screen">
-    <div class="card">
-      <b>Выбери ставку</b>
-      <div class="muted">Шаг 4/5</div>
-    </div>
-
-    <div id="heroPreview3" class="heroPreview"></div>
-
-    <div class="row">
-      <button class="btn" data-bet="10">10</button>
-      <button class="btn" data-bet="50">50</button>
-      <button class="btn" data-bet="100">100</button>
-    </div>
-
-    <button id="backToStyle" class="btn btnGhost">Назад</button>
-  </section>
-
-  <!-- SCREEN 5: GAME -->
-  <section id="screenGame" class="screen">
-    <div class="card">
-      <b>Игра</b>
-      <div id="gameInfo" class="muted">Шаг 5/5</div>
-    </div>
-
-    <div id="heroPreviewGame" class="heroPreview"></div>
-
-    <div id="table">
-    <div id="chain"></div>
-   </div>
-
-        <div>Цепь: <b id="chainEnds">—</b></div>
-        <div>Ход: <b id="turnLabel">—</b></div>
-      </div>
-
-      <div id="chain" class="chain"></div>
-    </div>
-
-    <div class="row" style="margin-top:12px;">
-      <button id="btnNewGame" class="btn btnPrimary">Новая игра</button>
-      <button id="btnDraw" class="btn">Добрать</button>
-      <button id="btnClear" class="btn">Очистить</button>
-    </div>
-
-    <div class="card" style="margin-top:12px;">
-      <div class="muted" style="margin-bottom:8px;">Твои кости (тапни, чтобы сыграть)</div>
-      <div id="hand" class="hand"></div>
-      <div id="hint" class="muted" style="margin-top:10px;"></div>
-      <div class="muted" style="margin-top:10px;">Колода: <b id="deckCount">—</b></div>
-    </div>
-
-    <button id="backToBet" class="btn btnGhost">Назад</button>
-  </section>
-
-  <pre id="debugOut" class="debug" style="display:none;"></pre>
-
-  <script src="./js/state.js?v=2"></script>
-  <script src="./js/ui.js?v=2"></script>
-  <script src="./js/game.js?v=2"></script>
-  <script src="./js/main.js?v=2"></script>
+<script src="./js/main.js"></script>
 </body>
 </html>
