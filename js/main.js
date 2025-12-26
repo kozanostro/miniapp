@@ -1,42 +1,152 @@
-const tg = window.Telegram?.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
+(function(){
+  function safeEl(id){
+    return document.getElementById(id);
+  }
 
-const table = document.getElementById("table");
-const tilesLayer = document.getElementById("tilesLayer");
-const startBtn = document.getElementById("startBtn");
-const playBtn = document.getElementById("playBtn");
-const clearBtn = document.getElementById("clearBtn");
+  function boot(){
+    const S = window.AppState;
+    const UI = window.UI;
 
-let started = false;
+    // TG init
+    if (S.tg){
+      S.tg.ready();
+      S.tg.expand();
+      S.user = S.tg.initDataUnsafe?.user || null;
+    } else {
+      S.user = null;
+    }
 
-// !!! ВПИШИ ТУТ ТОЧНОЕ ИМЯ ФАЙЛА СТОЛА ИЗ assets !!!
-const TABLE_FILE = "table.png"; // <-- поменяй на своё имя, если не table.png
+    UI.renderProfile();
 
-const TABLE_URL = `./assets/${TABLE_FILE}?v=9`;
-table.style.backgroundImage = `url("${TABLE_URL}")`;
-table.style.backgroundSize = "cover";
-table.style.backgroundPosition = "center bottom";
-table.style.backgroundRepeat = "no-repeat";
+    // баланс
+    if (S.user?.id){
+      S.balance = window.Storage.loadBalance(S.user.id);
+      UI.renderWallet();
 
-function createDomino(a, b) {
-  const d = document.createElement("div");
-  d.className = "domino";
-  d.innerHTML = `<span>${a}</span><span>${b}</span>`;
-  return d;
-}
+      const btnPlus = UI.el("btnPlus");
+      if (btnPlus) btnPlus.onclick = () => {
+        S.balance += 10;
+        window.Storage.saveBalance(S.user.id, S.balance);
+        UI.renderWallet();
+      };
 
-startBtn.onclick = () => {
-  started = true;
-  tilesLayer.innerHTML = "";
-};
+      const btnMinus = UI.el("btnMinus");
+      if (btnMinus) btnMinus.onclick = () => {
+        S.balance -= 10;
+        window.Storage.saveBalance(S.user.id, S.balance);
+        UI.renderWallet();
+      };
 
-playBtn.onclick = () => {
-  if (!started) return;
-  const a = Math.floor(Math.random() * 7);
-  const b = Math.floor(Math.random() * 7);
-  tilesLayer.appendChild(createDomino(a, b));
-};
+      const btnReset = UI.el("btnReset");
+      if (btnReset) btnReset.onclick = () => {
+        S.balance = 1000;
+        window.Storage.saveBalance(S.user.id, S.balance);
+        UI.renderWallet();
+      };
+    }
 
-clearBtn.onclick = () => {
-  tilesLayer.innerHTML = "";
-};
+    // стартовые значения
+    S.diff = "easy";
+    S.style = "classic";
+    S.bet = 10;
+    S.player = S.playerByDiff.easy;
+    UI.renderHero();
+    UI.renderGameInfo();
+
+    // навигация
+    const btnStart = UI.el("btnStart");
+    if (btnStart) btnStart.onclick = () => {
+      UI.setSubtitle("Шаг 2/5 • Сложность");
+      UI.renderHero();
+      UI.showScreen("diff");
+    };
+
+    const backToStart = UI.el("backToStart");
+    if (backToStart) backToStart.onclick = () => {
+      UI.setSubtitle("Шаг 1/5 • Старт");
+      UI.showScreen("start");
+    };
+
+    const backToDiff = UI.el("backToDiff");
+    if (backToDiff) backToDiff.onclick = () => {
+      UI.setSubtitle("Шаг 2/5 • Сложность");
+      UI.showScreen("diff");
+    };
+
+    const backToStyle = UI.el("backToStyle");
+    if (backToStyle) backToStyle.onclick = () => {
+      UI.setSubtitle("Шаг 3/5 • Стиль");
+      UI.showScreen("style");
+    };
+
+    const backToBet = UI.el("backToBet");
+    if (backToBet) backToBet.onclick = () => {
+      UI.setSubtitle("Шаг 4/5 • Ставка");
+      UI.showScreen("bet");
+    };
+
+    // difficulty buttons
+    document.querySelectorAll("[data-diff]").forEach(btn=>{
+      btn.addEventListener("click", () => {
+        S.diff = btn.dataset.diff;
+        S.player = S.playerByDiff[S.diff] || S.playerByDiff.easy;
+        UI.renderHero();
+        UI.setSubtitle("Шаг 3/5 • Стиль");
+        UI.showScreen("style");
+      });
+    });
+
+    // style buttons
+    document.querySelectorAll("[data-style]").forEach(btn=>{
+      btn.addEventListener("click", () => {
+        S.style = btn.dataset.style;
+        UI.renderHero();
+        UI.setSubtitle("Шаг 4/5 • Ставка");
+        UI.showScreen("bet");
+      });
+    });
+
+    // bet buttons
+    document.querySelectorAll("[data-bet]").forEach(btn=>{
+      btn.addEventListener("click", () => {
+        S.bet = Number(btn.dataset.bet) || 10;
+        UI.renderHero();
+        UI.renderGameInfo();
+
+        UI.setSubtitle("Шаг 5/5 • Игра");
+        UI.showScreen("game");
+
+        window.Game.startNewGame();
+      });
+    });
+
+    // game buttons
+    const btnNewGame = UI.el("btnNewGame");
+    if (btnNewGame) btnNewGame.onclick = () => window.Game.startNewGame();
+
+    const btnDraw = UI.el("btnDraw");
+    if (btnDraw) btnDraw.onclick = () => window.Game.playerDraw();
+
+    const btnClear = UI.el("btnClear");
+    if (btnClear) btnClear.onclick = () => window.Game.clearGame();
+
+    // debug
+    const btnDebug = UI.el("btnDebug");
+    if (btnDebug) btnDebug.onclick = () => {
+      const out = UI.el("debugOut");
+      if (!out) return;
+      out.style.display = out.style.display === "none" ? "block" : "none";
+      out.textContent = JSON.stringify({
+        diff: S.diff, style: S.style, bet: S.bet, balance: S.balance,
+        user: S.user,
+        tg: S.tg ? { platform:S.tg.platform, version:S.tg.version } : null
+      }, null, 2);
+    };
+
+    UI.setSubtitle("Шаг 1/5 • Старт");
+    UI.showScreen("start");
+  }
+
+  // Ключевой момент: стартуем только когда DOM готов
+  document.addEventListener("DOMContentLoaded", boot);
+})();
