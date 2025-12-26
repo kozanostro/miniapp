@@ -1,56 +1,38 @@
-body {
-  margin: 0;
-  padding: 16px;
-  background: #111;
-  color: #fff;
-  font-family: system-ui, Arial;
-}
+body { margin:0; padding:16px; background:#111; color:#fff; font-family:system-ui, Arial; }
 
-button {
-  padding: 12px;
-  margin: 8px 0;
-  width: 100%;
-  font-size: 16px;
-}
+button { padding:12px; margin:8px 0; width:100%; font-size:16px; }
 
-#tableWrapper {
-  margin-top: 16px;
-  background: #000;
+#table{
+  position: relative;
+  height: 360px;
   border-radius: 14px;
   overflow: hidden;
+  background-color:#000; /* запасной цвет, если картинка не загрузилась */
 }
 
-#table {
-  position: relative;
-  height: 320px;
-
-  background-image: url("../assets/table.png");
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  gap: 6px;
-  overflow-x: auto;
+#tilesLayer{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  padding:12px;
+  overflow-x:auto;
 }
 
-.domino {
-  width: 48px;
-  height: 24px;
-  background: #eee;
-  border-radius: 4px;
-  color: #000;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  padding: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  flex-shrink: 0;
+.domino{
+  width:54px;
+  height:26px;
+  background:#eee;
+  border-radius:6px;
+  color:#000;
+  font-weight:800;
+  display:flex;
+  justify-content:space-between;
+  padding:4px 6px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.4);
+  flex-shrink:0;
 }
 
-.controls {
-  display: flex;
-  gap: 8px;
-}
+.controls{ display:flex; gap:8px; }
+.controls button{ width:50%; }
