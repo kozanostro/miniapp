@@ -78,41 +78,35 @@
       status: "playing",
     };
   }
-  function renderChain(chainTiles) {
-    const chainEl = document.getElementById("chain");
+
+  function renderChain(){
+    const chainEl = el("chain");
+    const endsEl = el("chainEnds");
+    const deckEl = el("deckCount");
     if (!chainEl) return;
 
+    const g = S.game;
     chainEl.innerHTML = "";
 
-    const wrapEvery = 7; // сколько костей в ряд (под экран телефона). Можно 6-8.
+    if (deckEl) deckEl.textContent = g ? String(g.deck.length) : "—";
 
-    chainTiles.forEach((t, i) => {
-    const tile = document.createElement("div");
-    tile.className = "tile";
-
-    // делаем "угол" на стыках рядов
-    // пример: последняя в ряду и первая в новом ряду - вертикальная
-    if ((i + 1) % wrapEvery === 0 || i % wrapEvery === 0) {
-      tile.classList.add("v");
+    if (!g || g.chain.tiles.length===0){
+      if (endsEl) endsEl.textContent = "—";
+      return;
     }
 
-    const a = document.createElement("span");
-    const split = document.createElement("div");
-    const b = document.createElement("span");
-    split.className = "split";
+    if (endsEl) endsEl.textContent = `${g.chain.leftEnd} … ${g.chain.rightEnd}`;
 
-    a.textContent = String(t.left);
-    b.textContent = String(t.right);
+    g.chain.tiles.slice(-9).forEach(t=>{
+      const a = t.flip ? t.b : t.a;
+      const b = t.flip ? t.a : t.b;
+      const div = document.createElement("div");
+      div.className = "tile tileSmall";
+      div.innerHTML = `<span>${a}</span><div class="split"></div><span>${b}</span>`;
+      chainEl.appendChild(div);
+    });
+  }
 
-    tile.appendChild(a);
-    tile.appendChild(split);
-    tile.appendChild(b);
-
-    chainEl.appendChild(tile);
-  });
-}
-
-  
   function renderHand(){
     const handEl = el("hand");
     const hintEl = el("hint");
@@ -143,30 +137,7 @@
 
       const btn = document.createElement("button");
       btn.title = legal ? "Сыграть" : "Не подходит";
-      btn.disabled = g.turn !== "player" || g.status !== "playing"; // НЕ зависим от legal
-
-// НЕ трогаем opacity вообще — все одинаковые
-
-btn.onclick = () => {
-  if (g.turn !== "player") return;
-  if (g.status !== "playing") return;
-
-  const ok = canPlay(t, g.chain.leftEnd, g.chain.rightEnd);
-  if (!ok) {
-    // короткий фидбек (по желанию)
-    const hintEl = el("hint");
-    if (hintEl) hintEl.textContent = "Эта кость не подходит.";
-    return;
-  }
-
-  // сыграли
-  g.player.splice(idx,1);
-  applyTile(g.chain, t);
-
-  checkEndOrBot();
-  renderAll();
-};
-
+      btn.disabled = !legal || g.turn !== "player" || g.status!=="playing";
 
       const tile = document.createElement("div");
       tile.className = "tile";
