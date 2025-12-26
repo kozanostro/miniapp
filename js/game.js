@@ -137,7 +137,30 @@
 
       const btn = document.createElement("button");
       btn.title = legal ? "Сыграть" : "Не подходит";
-      btn.disabled = !legal || g.turn !== "player" || g.status!=="playing";
+      btn.disabled = g.turn !== "player" || g.status !== "playing"; // НЕ зависим от legal
+
+// НЕ трогаем opacity вообще — все одинаковые
+
+btn.onclick = () => {
+  if (g.turn !== "player") return;
+  if (g.status !== "playing") return;
+
+  const ok = canPlay(t, g.chain.leftEnd, g.chain.rightEnd);
+  if (!ok) {
+    // короткий фидбек (по желанию)
+    const hintEl = el("hint");
+    if (hintEl) hintEl.textContent = "Эта кость не подходит.";
+    return;
+  }
+
+  // сыграли
+  g.player.splice(idx,1);
+  applyTile(g.chain, t);
+
+  checkEndOrBot();
+  renderAll();
+};
+
 
       const tile = document.createElement("div");
       tile.className = "tile";
