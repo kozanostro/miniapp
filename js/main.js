@@ -1,136 +1,140 @@
-console.log("main.js loaded");
-
 (function(){
-  const S = window.AppState;
-  const UI = window.UI;
-
-  function initTG(){
-    if (!S.tg) return;
-    S.tg.ready();
-    S.tg.expand();
+  function safeEl(id){
+    return document.getElementById(id);
   }
 
-  function initUser(){
-    if (!S.tg) return null;
-    return S.tg.initDataUnsafe?.user || null;
-  }
+  function boot(){
+    const S = window.AppState;
+    const UI = window.UI;
 
-  function applyStyle(){
-    // пока просто заглушка (можно потом менять css-переменные)
-    // style: classic / dark
-  }
+    // TG init
+    if (S.tg){
+      S.tg.ready();
+      S.tg.expand();
+      S.user = S.tg.initDataUnsafe?.user || null;
+    } else {
+      S.user = null;
+    }
 
-  function bindNav(){
-    UI.el("btnStart").onclick = () => {
+    UI.renderProfile();
+
+    // баланс
+    if (S.user?.id){
+      S.balance = window.Storage.loadBalance(S.user.id);
+      UI.renderWallet();
+
+      const btnPlus = UI.el("btnPlus");
+      if (btnPlus) btnPlus.onclick = () => {
+        S.balance += 10;
+        window.Storage.saveBalance(S.user.id, S.balance);
+        UI.renderWallet();
+      };
+
+      const btnMinus = UI.el("btnMinus");
+      if (btnMinus) btnMinus.onclick = () => {
+        S.balance -= 10;
+        window.Storage.saveBalance(S.user.id, S.balance);
+        UI.renderWallet();
+      };
+
+      const btnReset = UI.el("btnReset");
+      if (btnReset) btnReset.onclick = () => {
+        S.balance = 1000;
+        window.Storage.saveBalance(S.user.id, S.balance);
+        UI.renderWallet();
+      };
+    }
+
+    // стартовые значения
+    S.diff = "easy";
+    S.style = "classic";
+    S.bet = 10;
+    S.player = S.playerByDiff.easy;
+    UI.renderHero();
+    UI.renderGameInfo();
+
+    // навигация
+    const btnStart = UI.el("btnStart");
+    if (btnStart) btnStart.onclick = () => {
       UI.setSubtitle("Шаг 2/5 • Сложность");
       UI.renderHero();
       UI.showScreen("diff");
     };
 
-    UI.el("backToStart").onclick = () => {
+    const backToStart = UI.el("backToStart");
+    if (backToStart) backToStart.onclick = () => {
       UI.setSubtitle("Шаг 1/5 • Старт");
       UI.showScreen("start");
     };
 
-    UI.el("backToDiff").onclick = () => {
+    const backToDiff = UI.el("backToDiff");
+    if (backToDiff) backToDiff.onclick = () => {
       UI.setSubtitle("Шаг 2/5 • Сложность");
       UI.showScreen("diff");
     };
 
-    UI.el("backToStyle").onclick = () => {
+    const backToStyle = UI.el("backToStyle");
+    if (backToStyle) backToStyle.onclick = () => {
       UI.setSubtitle("Шаг 3/5 • Стиль");
       UI.showScreen("style");
     };
 
-    UI.el("backToBet").onclick = () => {
+    const backToBet = UI.el("backToBet");
+    if (backToBet) backToBet.onclick = () => {
       UI.setSubtitle("Шаг 4/5 • Ставка");
       UI.showScreen("bet");
     };
-  }
 
-  function bindDifficulty(){
+    // difficulty buttons
     document.querySelectorAll("[data-diff]").forEach(btn=>{
-      btn.onclick = () => {
+      btn.addEventListener("click", () => {
         S.diff = btn.dataset.diff;
         S.player = S.playerByDiff[S.diff] || S.playerByDiff.easy;
         UI.renderHero();
-
         UI.setSubtitle("Шаг 3/5 • Стиль");
         UI.showScreen("style");
-      };
+      });
     });
-  }
 
-  function bindStyle(){
+    // style buttons
     document.querySelectorAll("[data-style]").forEach(btn=>{
-      btn.onclick = () => {
+      btn.addEventListener("click", () => {
         S.style = btn.dataset.style;
-        applyStyle();
         UI.renderHero();
-
         UI.setSubtitle("Шаг 4/5 • Ставка");
         UI.showScreen("bet");
-      };
+      });
     });
-  }
 
-  function bindBet(){
+    // bet buttons
     document.querySelectorAll("[data-bet]").forEach(btn=>{
-      btn.onclick = () => {
+      btn.addEventListener("click", () => {
         S.bet = Number(btn.dataset.bet) || 10;
-
         UI.renderHero();
         UI.renderGameInfo();
 
         UI.setSubtitle("Шаг 5/5 • Игра");
         UI.showScreen("game");
 
-        // стартуем игру сразу (чтобы не было пусто)
         window.Game.startNewGame();
-      };
+      });
     });
-  }
 
-  function bindWallet(){
-    const uid = S.user?.id;
-    if (!uid) return;
+    // game buttons
+    const btnNewGame = UI.el("btnNewGame");
+    if (btnNewGame) btnNewGame.onclick = () => window.Game.startNewGame();
 
-    S.balance = window.Storage.loadBalance(uid);
-    UI.renderWallet();
-
-    UI.el("btnPlus").onclick = () => {
-      S.balance += 10;
-      window.Storage.saveBalance(uid, S.balance);
-      UI.renderWallet();
-    };
-    UI.el("btnMinus").onclick = () => {
-      S.balance -= 10;
-      window.Storage.saveBalance(uid, S.balance);
-      UI.renderWallet();
-    };
-    UI.el("btnReset").onclick = () => {
-      S.balance = 1000;
-      window.Storage.saveBalance(uid, S.balance);
-      UI.renderWallet();
-    };
-  }
-  function bindGameButtons(){
-  UI.el("btnNewGame").onclick = () => window.Game.startNewGame();
-  UI.el("btnDraw").onclick = () => window.Game.playerDraw();
     const btnDraw = UI.el("btnDraw");
-  if (btnDraw){
-  btnDraw.onclick = () => window.Game.playerDraw();
-}
+    if (btnDraw) btnDraw.onclick = () => window.Game.playerDraw();
 
-  UI.el("btnClear").onclick = () => window.Game.clearGame();
-}
+    const btnClear = UI.el("btnClear");
+    if (btnClear) btnClear.onclick = () => window.Game.clearGame();
 
-  
-  }
-
-  function bindDebug(){
-    UI.el("btnDebug").onclick = () => {
+    // debug
+    const btnDebug = UI.el("btnDebug");
+    if (btnDebug) btnDebug.onclick = () => {
       const out = UI.el("debugOut");
+      if (!out) return;
       out.style.display = out.style.display === "none" ? "block" : "none";
       out.textContent = JSON.stringify({
         diff: S.diff, style: S.style, bet: S.bet, balance: S.balance,
@@ -138,35 +142,11 @@ console.log("main.js loaded");
         tg: S.tg ? { platform:S.tg.platform, version:S.tg.version } : null
       }, null, 2);
     };
-  }
-
-  function boot(){
-    initTG();
-
-    S.user = initUser();
-    UI.renderProfile();
-
-    // если не Telegram — всё равно откроется, но профиля не будет
-    if (S.user){
-      bindWallet();
-    }
-
-    // стартовые значения
-    S.player = S.playerByDiff.easy;
-    UI.renderHero();
-    UI.renderGameInfo();
-
-    bindNav();
-    bindDifficulty();
-    bindStyle();
-    bindBet();
-    bindGameButtons();
-    bindDebug();
 
     UI.setSubtitle("Шаг 1/5 • Старт");
     UI.showScreen("start");
   }
 
-  boot();
+  // Ключевой момент: стартуем только когда DOM готов
+  document.addEventListener("DOMContentLoaded", boot);
 })();
-
